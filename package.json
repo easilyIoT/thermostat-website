@@ -5,6 +5,7 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
+    "export": "npm run build && next export",
     "type-check": "tsc"
   },
   "dependencies": {
@@ -25,7 +26,9 @@
     "@types/react-dom": "^16.9.4",
     "@types/styled-components": "^5.0.1",
     "babel-plugin-styled-components": "^1.10.7",
-    "typescript": "3.7.3"
+    "colors.css": "^3.0.0",
+    "typescript": "3.7.3",
+    "typescript-styled-plugin": "^0.15.0"
   },
   "license": "ISC"
 }

@@ -3,7 +3,7 @@ import { ServerStyleSheet } from "styled-components"
 import { ReactElement } from "react";
 
 
-export interface Props {
+export type Props = {
         styleTags: ReactElement<{}>[]
 }
 export interface InitialProps extends DocumentInitialProps {
@@ -37,16 +37,19 @@ export default class MyDocument extends Document<Props> {
                 }
         }
 
-        render = () => (
-                <html>
-                        <Head>
-                                <title>Easily Thermostat</title>
-                                {this.props.styleTags}
-                        </Head>
-                        <body>
-                                <Main />
-                                <NextScript />
-                        </body>
-                </html>
-        )
+        render = () => {
+                return (
+                        <html>
+                                <Head>
+                                        {this.props.styleTags}
+                                        <script src="https://kit.fontawesome.com/3b2e248047.js" crossOrigin="anonymous"></script>
+                                        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800&display=swap" rel="stylesheet"></link>
+                                </Head>
+                                <body>
+                                        <Main />
+                                        <NextScript />
+                                </body>
+                        </html>
+                )
+        }
 }

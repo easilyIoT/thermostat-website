@@ -6,23 +6,69 @@ import { ApolloProvider } from "@apollo/react-hooks"
 import withApollo from "../hooks/withApollo"
 import { ApolloClient, NormalizedCacheObject } from "apollo-boost"
 
-export interface ITheme {
+import colors from "colors.css/js/colors"
 
+
+export interface ITheme {
+        navSize: number,
+
+        textPrimary: string,
+        textSecondary: string,
+
+        bgPrimary: string,
+        bgSecondary: string,
+
+        transitionSpeed: string,
+
+        iconColor: string,
 }
 
 export interface IThemeWrapper {
-
+        theme: ITheme
 }
 
 export const theme: ITheme = {
+        navSize: 5,
 
+        textPrimary: "#b6b6b6",
+        textSecondary: "#ececec",
+
+        bgPrimary: "#23232e",
+        bgSecondary: "#141418",
+
+        transitionSpeed: "600ms",
+
+        iconColor: colors.orange
 }
 
 const GlobalStyle = createGlobalStyle<IThemeWrapper>`
+        :root {
+                font-size: 16px;
+                font-family: 'Open Sans', sans-serif;
+        }
+
+        * {
+                box-sizing: border-box;
+        }
+              
         body {
                 margin: 0;
                 padding: 0;
         }
+
+        body::-webkit-scrollbar {
+                width: 0.5rem;
+        }
+
+        body::-webkit-scrollbar-track {
+                background: transparent;
+        }
+
+        body::-webkit-scrollbar-thumb {
+                background: ${props => props.theme.iconColor};
+                border-radius: 30px
+        }
+
 `;
 
 export interface IProps {
