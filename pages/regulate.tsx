@@ -1,7 +1,26 @@
-import React from "react"
+import React, { useState } from "react"
 import styled, { keyframes } from "styled-components"
 
 import Layout from '../components/Layout'
+
+
+type Size = {
+        size: number
+}
+type Rotate = {
+        rotate: number
+};
+
+
+type LeftRight = {
+        left?: boolean;
+        right?: boolean;
+};
+
+
+type Edited = {
+        edited: boolean;
+}
 
 const shadowAnim = keyframes`
         0% {
@@ -102,21 +121,36 @@ const Thermostat = styled(_centerRadius)`
         }
         position: absolute;
 
-        width: 400px;
-        height: 400px;
         background: #6D697F;
         box-shadow: inset 0px -6px 1px 2px rgba(0,0,0,0.35), 0px 7px 40px 11px rgba(84, 81, 97, 0.40);
+
+        @media screen and (max-width: 400px) {
+                width: 350px;
+                height: 350px;
+        }  
+
+        @media screen and (max-width: 900px) and (min-width: 400px) {
+                width: 400px;
+                height: 400px;
+        }     
+
+        @media screen and (min-width: 900px) {
+                width: 650px;
+                height: 650px;
+        }
 
 
 `;
 
-const Shadow = styled.div`
+
+
+const Shadow = styled.div<Rotate & Edited>`
         position: absolute;
         
         top: 50%;
         left: 50%;
 
-        transform: translate(-50%, -50%) rotateZ(10deg);
+        transform: translate(-50%, -50%) ${props => props.rotate && `rotate(${-180 + props.rotate * 10}deg)`};
 
         width: 25px;
         height: 86%;
@@ -124,7 +158,9 @@ const Shadow = styled.div`
         text-align: center;
 
         transition: 0.7s ease;
-        animation: ${shadowAnim} 1.4s ease-out both;
+        animation: ${shadowAnim} 1.4s ease - out both;
+
+        ${props => props.edited && `animation: 0s ease 0s 1 normal none running none;`}
 
 `;
 
@@ -136,24 +172,35 @@ const ShadowCube = styled.div`
         box-shadow: 0 0 45px 13px rgba(255, 158, 35, 0.5);
 `;
 
-const Number = styled.div`
+
+const Number = styled.div<Rotate>`
         position: absolute;
 
         top: 50%;
         left: 50%;
 
-        transform: translate(-50%, -50%) rotateZ(10deg);
+        transform: translate(-50%, -50%)  ${props => props.rotate && `rotate(${-180 + props.rotate * 10}deg)`};
 
         width: 40px;
         height: 82%;
 
         text-align: center;
-        transition: 0.7s ease;
+        transition: 0.5s ease;
 
         opacity: 0;
 
         ${Thermostat}:hover & {
                 opacity: 1;
+        }
+
+        @media screen and (max-width: 400px) {
+        }  
+
+        @media screen and (max-width: 900px) and (min-width: 400px) {
+        }     
+
+        @media screen and (min-width: 900px) {
+                height: 90%;
         }
 `;
 
@@ -166,12 +213,9 @@ const Ext = styled.span`
 
 const Bar = styled(_centerRadius)`
         position: absolute;
-        
-        width: 356px;
-        height: 356px;
+        overflow: hidden;
 
         & span {
-                width: 356px;
                 font-weight: 800;
 
                 position: absolute;
@@ -186,6 +230,34 @@ const Bar = styled(_centerRadius)`
                 
                 z-index: 10;
         }
+
+        
+        @media screen and (max-width: 400px) {
+                width: 306px;
+                height: 306px;
+
+                & span {
+                        width: 306px;
+                }
+        }  
+
+        @media screen and (max-width: 900px) and (min-width: 400px) {
+                width: 356px;
+                height: 356px;
+
+                & span {
+                        width: 356px;
+                }
+        }     
+
+        @media screen and (min-width: 900px) {
+                width: 606px;
+                height: 606px;
+
+                & span {
+                        width: 606px;
+                }
+        }
 `;
 
 const InnerBar = styled.div`
@@ -194,11 +266,8 @@ const InnerBar = styled.div`
         top: 50%;
         left: 50%;
 
-        width: 344px;
-        height: 344px;
 
-        margin-left: -172px;
-        margin-top: -172px;
+        transform: translate(-50%, -50%);
 
         border-radius: 100%;
 
@@ -219,29 +288,52 @@ const InnerBar = styled.div`
                 left: 50%;
                 transform: translatex(-50%);
         }
+
+        @media screen and (max-width: 400px) {
+                width: 294px;
+                height: 294px;
+        }  
+
+        @media screen and (max-width: 900px) and (min-width: 400px) {
+                width: 344px;
+                height: 344px;
+        }     
+
+        @media screen and (min-width: 900px) {
+                width: 594px;
+                height: 594px;
+        }
 `;
 
-
-interface LeftRightProp {
-        left?: boolean;
-        right?: boolean;
-};
 
 const Hold = styled.div`
         position: absolute;
+
         width: 100%;
         height: 100%;
-        clip: rect(0px, 356px, 356px, 178px);
+
         border-radius: 100%;
         background-color: #3a3749;
 
+        @media screen and (max-width: 400px) {
+                clip: rect(0px, 306px, 306px, 153px);
+        }  
+
+        @media screen and (max-width: 900px) and (min-width: 400px) {
+                clip: rect(0px, 356px, 356px, 178px);
+                
+        }     
+
+        @media screen and (min-width: 900px) {
+                clip: rect(0px, 606px, 606px, 303px);
+        }
 `;
 
-const Left = styled(Hold)`
+const HoldLeft = styled(Hold)`
 
 `;
 
-const Right = styled(Hold)`
+const HoldRight = styled(Hold)`
         z-index: 3;
         -webkit-transform: rotate(180deg);
         -moz-transform: rotate(180deg);
@@ -249,12 +341,12 @@ const Right = styled(Hold)`
 `;
 
 
-const Fill = styled.div<LeftRightProp>`
+const Fill = styled.div<LeftRight>`
         position: absolute;
         width: 100%;
         height: 100%;
         border-radius: 100%;
-        clip: rect(0px, 178px, 356px, 0px);
+        
 
         background: ${
         props => props.left
@@ -264,7 +356,7 @@ const Fill = styled.div<LeftRightProp>`
                         : "initial"
         };
 
-        ${Left} & {
+        ${HoldLeft} & {
                 z-index: 1;
 
                 animation: ${leftAnim} 0.3s linear both;
@@ -276,7 +368,7 @@ const Fill = styled.div<LeftRightProp>`
                 transition-delay: 1s;
         }
 
-        ${Right} & {
+        ${HoldRight} & {
                 z-index: 3;
                
                 animation: ${rightAnim} 1s linear both;
@@ -285,12 +377,23 @@ const Fill = styled.div<LeftRightProp>`
                 transition: transform 0.6s;
         }
 
+        @media screen and (max-width: 400px) {
+                clip: rect(0px, 153px, 306px, 0px);
+        }  
+
+        @media screen and (max-width: 900px) and (min-width: 400px) {
+                clip: rect(0px, 178px, 356px, 0px);
+                
+        }     
+
+        @media screen and (min-width: 900px) {
+                clip: rect(0px, 303px, 606px, 0px);
+        }
+
 `;
 
 const Center = styled(_centerRadius)`
         position: absolute;
-        width: 260px;
-        height: 260px;
         background: #e3e4ed;
         animation: ${boundInAnim} 0.6s ease forwards;
 
@@ -300,8 +403,35 @@ const Center = styled(_centerRadius)`
                 color: #b9b6c8;
                 font-size: 40px;
                 font-weight: 500;
-                height: 260px;
         }
+
+        @media screen and (max-width: 400px) {
+                width: 210px;
+                height: 210px;
+
+                & span svg {
+                        height: 210px;
+                }
+        }  
+
+        @media screen and (max-width: 900px) and (min-width: 400px) {
+                width: 260px;
+                height: 260px;
+
+                & span svg {
+                        height: 260px;
+                }
+        }     
+
+        @media screen and (min-width: 900px) {
+                width: 510px;
+                height: 510px;
+
+                & span svg {
+                        height: 510px;
+                }
+        }
+
 `;
 
 const Arrow = styled.span`
@@ -338,19 +468,31 @@ const Plus = styled(Arrow)`
 const Small = styled(_centerRadius)`
         position: absolute;
         
-        width: 150px;
-        height: 150px;
         
         background: #F8F9FA;
 
         text-align: center;
         
         animation: ${boundInSmallAnim} 0.6s ease forwards;
+
+
+        @media screen and (max-width: 400px) {
+                width: 110px;
+                height: 110px;
+        }  
+
+        @media screen and (max-width: 900px) and (min-width: 400px) {
+                width: 150px;
+                height: 150px;
+        }     
+
+        @media screen and (min-width: 900px) {
+                width: 380px;
+                height: 380px;
+        }
 `;
 
 const Heat = styled.span`
-        line-height: 150px;
-        font-size: 59px;
         color: #57545f;
         font-weight: 300;
 
@@ -358,65 +500,170 @@ const Heat = styled.span`
                 content: '°';
                 display: block;
                 position: absolute;
-                font-size: 40px;
+                font-size: 50px;
                 top: -20px;
-                right: 30px;
+        }
+
+        @media screen and (max-width: 400px) {
+                line-height: 100px;
+                font-size: 45px;
+        
+                &:after {
+                        right: 18px;
+                        font-size: 40px;
+                }
+        }  
+
+        @media screen and (max-width: 900px) and (min-width: 400px) {
+                line-height: 150px;
+                font-size: 59px;
+
+                &:after {
+                        right: 20px;
+                }
+        }     
+
+        @media screen and (min-width: 900px) {
+                line-height: 350px;
+                font-size: 160px;
+
+                &:after {
+                        right: 60px;
+                        font-size: 70px;
+                }
         }
 `;
 
 
 Bar.displayName = "Bar";
 
-Hold.displayName = "Hold";
-
-Left.displayName = "Left";
-Right.displayName = "Right";
-
-Fill.displayName = "Fill";
-
-Shadow.displayName = "Shadow";
-Number.displayName = "Number";
-
 Center.displayName = "Center";
 
-type Props = {
-
+type Transforms = {
+        left: {
+                rotation: number;
+                delay: number;
+        }
+        right: {
+                rotation: number;
+                delay: number;
+        }
 }
 
-const Regulate: React.FunctionComponent<Props> = () => {
+const Regulate: React.FunctionComponent<any> = () => {
+
+        const [gradi, setGradi] = useState<number>(19);
+        const [isModified, setIsModified] = useState<boolean>(false);
+        const [transforms, setTransforms] = useState<Transforms>({
+                left: {
+                        rotation: 10,
+                        delay: 0
+                },
+                right: {
+                        rotation: 180,
+                        delay: 0
+                }
+        });
 
         const handleDecrease = () => {
+                const newGradi = gradi - 1;
 
+                
+                
+                if (newGradi >= 18) {
+                        setTransforms({
+                                ...transforms,
+                                left: {
+                                        rotation: (newGradi - 18) * 10,
+                                        delay: 0
+                                }
+                        });
+                } else if (newGradi === 17) {
+                        setTransforms({
+                                ...transforms,
+                                right: {
+                                        rotation: newGradi * 10,
+                                        delay: 0.5
+                                }
+                        })
+                } else {
+                        setTransforms({
+                                ...transforms,
+                                right: {
+                                        rotation: newGradi * 10,
+                                        delay: 0
+                                }
+                        })
+                }
+                setGradi(newGradi);
+                setIsModified(true);
         }
 
         const handleIncrease = () => {
+                const newGradi = gradi + 1;
+                setGradi(newGradi);
+                setIsModified(true);
 
+                if (newGradi > 19)
+                        setTransforms({
+                                ...transforms,
+                                left: {
+                                        rotation: (newGradi - 18) * 10,
+                                        delay: 0
+                                }
+                        })
+                else if (newGradi === 19)
+                        setTransforms({
+                                ...transforms,
+                                left: {
+                                        rotation: (newGradi - 18) * 10,
+                                        delay: 1
+                                }
+                        })
+                else
+                        setTransforms({
+                                ...transforms,
+                                right: {
+                                        rotation: newGradi * 10,
+                                        delay: 0
+                                }
+                        })
+                
+        
         };
 
         return (
                 <Layout title="Regulate">
                         <Thermostat>
                                 <Bar>
-                                        <InnerBar id="inner" />
-                                        <Left>
-                                                <Fill left />
-                                        </Left>
-                                        <Right>
-                                                <Fill right />
-                                        </Right>
+                                        <InnerBar />
+                                        <HoldLeft>
+                                                <Fill left style={{
+                                                        transform: `rotate(${transforms.left.rotation}deg)`,
+                                                        transitionDelay: `${transforms.left.delay}s`,
+                                                        animation : isModified ? `none` : "initial" 
+                                                }} />
+                                        </HoldLeft>
+                                        <HoldRight>
+                                                <Fill right  style={{
+                                                        transform: `rotate(${transforms.right.rotation}deg)`,
+                                                        transitionDelay: `${transforms.right.delay}s`,
+                                                        animation : isModified ? `none` : "initial" 
+                                                }}/>
+                                        </HoldRight>
                                         <span>Heating</span>
                                 </Bar>
-                                <Shadow>
+                                <Shadow rotate={gradi} edited={isModified}>
                                         <ShadowCube />
                                 </Shadow>
-                                <Number>
-                                        <Ext>19</Ext>
+                                <Number rotate={gradi} >
+                                        <Ext>{gradi}</Ext>
                                 </Number>
-                                <Center>
-                                        <Minus><i className="fas fa-chevron-left"></i></Minus>
-                                        <Plus><i className="fas fa-chevron-right"></i></Plus>
-                                        <Small>
-                                                <Heat className="heat">19</Heat>
+                                <Center >
+                                        <Minus onClick={handleDecrease} ><i className="fas fa-chevron-left"></i></Minus>
+                                        <Plus onClick={handleIncrease} ><i className="fas fa-chevron-right"></i></Plus>
+                                        <Small >
+                                                <Heat className="heat">{gradi}</Heat>
                                         </Small>
                                 </Center>
                         </Thermostat>

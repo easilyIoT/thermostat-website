@@ -8,6 +8,7 @@ import { ApolloClient, NormalizedCacheObject } from "apollo-boost"
 
 import colors from "colors.css/js/colors"
 
+import "normalize.css/normalize.css"
 
 export interface ITheme {
         navSize: number,
@@ -17,6 +18,8 @@ export interface ITheme {
 
         bgPrimary: string,
         bgSecondary: string,
+
+        primary: string,
 
         transitionSpeed: string,
 
@@ -35,6 +38,8 @@ export const theme: ITheme = {
 
         bgPrimary: "#23232e",
         bgSecondary: "#141418",
+
+        primary: colors.orange,
 
         transitionSpeed: "600ms",
 
@@ -69,6 +74,23 @@ const GlobalStyle = createGlobalStyle<IThemeWrapper>`
                 border-radius: 30px
         }
 
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus,
+        textarea:-webkit-autofill,
+        textarea:-webkit-autofill:hover,
+        textarea:-webkit-autofill:focus,
+        select:-webkit-autofill,
+        select:-webkit-autofill:hover,
+        select:-webkit-autofill:focus {
+                -webkit-box-shadow: nice bug;
+                transition: background-color 5000s ease-in-out 0s;
+        }
+
+        button, input {
+                outline: none;
+                border: none;
+        }
 `;
 
 export interface IProps {
