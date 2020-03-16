@@ -16,9 +16,7 @@ export default styled.div`
                 padding: 2em;
         }
 
-        @media screen and (max-width: 600px) {
-                font-size: 0.8em;
-        }
+        
 `;
 
 

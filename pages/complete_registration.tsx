@@ -4,7 +4,7 @@ import { useRouter } from "next/router"
 import axios from "axios"
 import { MetroSpinner } from "react-spinners-kit"
 import cookies from "react-cookies"
-import { blue } from "colors.css/js/colors"
+import { blue, green } from "colors.css/js/colors"
 
 import FullPage from "../components/FullPage"
 import Card, { CardTitle, CardBody } from "../components/Card"
@@ -12,6 +12,10 @@ import Bg from "../components/Bg"
 import Flex from "../components/Flex"
 import TextCenter from "../components/TextCenter"
 import Title from "../components/Title"
+import W from "../components/W"
+import M from "../components/M"
+import Text from "../components/Text"
+import Link from "../components/Link"
 
 import { hexToRgb } from "../utils/colors"
 
@@ -64,11 +68,18 @@ const CompleteRegistration: NextPage<Props> = () => {
                                                                                 <CardTitle>
                                                                                         <Title rgb={hexToRgb(blue)}>Complete registration</Title>
 
-                                                                                        Benvenuto <br/> {user.email}
                                                                                 </CardTitle>
-                                                                                <br />
                                                                                 <CardBody>
-                                                                                        You have to connect this account with Easily IoT
+                                                                                        <M bottom="1em">
+                                                                                                <W value="100%">
+                                                                                                        <Text fontSize="1.2em" fontWeight={600} >
+                                                                                                                Welcome <br /> {user.email}
+                                                                                                        </Text>
+                                                                                                </W>
+                                                                                        </M>
+                                                                                        <M bottom="1em">
+                                                                                                You have to connect this account with <Link href="https://webiste.arcanediver.now.sh" target="_blank"><Text fontSize="1.1em" fontWeight={600} rgb={hexToRgb(green)}>Easily IoT</Text></Link>
+                                                                                        </M>
                                                                                 </CardBody>
                                                                         </TextCenter>
                                                                 </React.Fragment>

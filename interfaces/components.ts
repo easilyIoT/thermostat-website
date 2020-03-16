@@ -14,9 +14,14 @@ export type GradientProp = {
         gradient?: string
 }
 
-export type MarginProps = {
+export type DirectionProps = {
         top?: string | number,
         left?: string | number,
         bottom?: string | number,
         right?: string | number
 } 
+
+export type FontProps = {
+        fontSize: string | number;
+        fontWeight?: 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
+}

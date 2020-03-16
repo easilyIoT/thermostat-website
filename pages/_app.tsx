@@ -54,12 +54,11 @@ const GlobalStyle = createGlobalStyle<IThemeWrapper>`
 
         * {
                 box-sizing: border-box;
-        }
-              
-        body {
                 margin: 0;
                 padding: 0;
         }
+              
+  
 
         body::-webkit-scrollbar {
                 width: 0.5rem;
