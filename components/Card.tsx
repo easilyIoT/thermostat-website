@@ -12,8 +12,12 @@ export default styled.div`
         background: white;
         box-shadow: 0px 0px 33px -17px rgba(0,0,0,0.75);
 
-        @media screen and (max-width: 500px) {
+        @media screen and (max-width: 800px) {
                 padding: 2em;
+        }
+
+        @media screen and (max-width: 600px) {
+                font-size: 0.8em;
         }
 `;
 
