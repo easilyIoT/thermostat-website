@@ -153,7 +153,7 @@ const Navbar: React.FunctionComponent<Props> = () => {
                                         </Link>
                                 </Logo>
                                 <Page>
-                                        <NextLink href="/regulate">
+                                        <NextLink href="/dashboard/regulate">
                                                 <Link>
 
                                                         <i className="fas fa-sliders-h fa-3x fa-fw"></i>
@@ -162,15 +162,15 @@ const Navbar: React.FunctionComponent<Props> = () => {
                                         </NextLink>
                                 </Page>
                                 <Page>
-                                        <NextLink href="/tasks">
+                                        <NextLink href="/dashboard/tasks">
                                                 <Link>
-                                                        <i className="fas fa-tasks fa-3x fa-fw"></i>
+                                                        <i className="fas fa-clipboard fa-3x fa-fw"></i>
                                                         <LinkText>Schedule</LinkText>
                                                 </Link>
                                         </NextLink>
                                 </Page>
                                 <Page>
-                                        <NextLink href="/settings">
+                                        <NextLink href="/dashboard/settings">
                                                 <Link>
                                                         <i className="fas fa-cogs fa-3x fa-fw"></i>
 

@@ -10,12 +10,12 @@ type Props = {
 
 const Main = styled.main`
 	margin-left: ${props => props.theme.navSize}rem;
-	padding: 1rem;
 	
 	height: 100vh;
 
 	@media screen and (max-width: 600px) {
 		margin-left: 0;	
+		height: calc(100vh - ${props => props.theme.navSize});
 	}
 
 `;

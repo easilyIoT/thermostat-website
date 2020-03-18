@@ -11,7 +11,7 @@ import Flex from "../components/Flex"
 import FullPage from "../components/FullPage"
 import Bg from "../components/Bg"
 import Card, { CardTitle } from "../components/Card"
-import Form, { FormInput, FormButton } from "../components/Form"
+import Form, { FormInput, FormButton, FormInputGroup } from "../components/Form"
 import Title from "../components/Title"
 import Link from "../components/Link"
 import M from "../components/M"
@@ -72,11 +72,11 @@ const Login: NextPage<Props> = () => {
                         password: ""
                 },
                 onSubmit: handleLogin,
-                validationSchema: Yup.object().shape<FormValues>({      
+                validationSchema: Yup.object().shape<FormValues>({
                         email: Yup.string().email(),
                         password: Yup.string().min(6).max(20)
                 }),
-                
+
         });
 
         return (
@@ -87,50 +87,35 @@ const Login: NextPage<Props> = () => {
                                                 <Form onSubmit={handleSubmit}>
                                                         <CardTitle>
                                                                 <Title rgb={hexToRgb(red)}>Easily Thermostat</Title>
-                                                                <br />
 								Login
 							</CardTitle>
-                                                        <div>
-                                                                <i className="fas fa-envelope fa-2x" style={
-                                                                        {
-                                                                                position: "relative",
-                                                                                top: "37px",
-                                                                                left: "-127px",
-                                                                                height: "26px",
-                                                                                color: orange
-                                                                        }
-                                                                } />
+
+                                                        <FormInputGroup rgb={hexToRgb(orange)}>
+                                                                <i className="fas fa-envelope fa-2x" />
                                                                 <FormInput
-                                                                        rgb={hexToRgb(orange)}
-                                                                        type="text"
+                                                                        type="email"
                                                                         name="email"
                                                                         placeholder="Email"
                                                                         value={values.email}
                                                                         onChange={handleChange}
                                                                 />
-                                                        </div>
-                                                        <div>
-                                                                <i className="fas fa-lock fa-2x" style={
-                                                                        {
-                                                                                position: "relative",
-                                                                                top: "37px",
-                                                                                left: "-127px",
-                                                                                height: "26px",
-                                                                                color: orange
-                                                                        }
-                                                                } />
+                                                        </FormInputGroup>
+
+
+                                                        <FormInputGroup rgb={hexToRgb(orange)}>
+                                                                <i className="fas fa-lock fa-2x" />
                                                                 <FormInput
-                                                                        rgb={hexToRgb(orange)}
                                                                         type="password"
                                                                         name="password"
                                                                         placeholder="Password"
                                                                         value={values.password}
                                                                         onChange={handleChange}
                                                                 />
-                                                        </div>
+                                                        </FormInputGroup>
+
 
                                                         <FormButton onSubmit={handleSubmit as any} >{
-                                                                !isLoading 
+                                                                !isLoading
                                                                         ? "Submit"
                                                                         : <div><i className="fas fa-spinner fa-spin"></i></div>
                                                         }

@@ -13,5 +13,12 @@ export default styled.div<FlexProps>`
         width: 100%;
         height: 100%;
 
-        
+        @media screen and (max-width: ${props => props.rowToCol || props.colToRow || 0}px) {
+                flex-direction: ${props => (props.rowToCol && "column") || (props.colToRow && "row") || "initial"};
+        }
+
+        & > * {
+                flex: 1 1 auto;
+        }
+
 `;

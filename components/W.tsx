@@ -5,5 +5,6 @@ type Props = {
 }
 
 export default styled.div<Props>`
+        height: 100%;
         width: ${props => props.value};
 `;

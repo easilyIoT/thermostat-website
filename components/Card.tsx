@@ -5,14 +5,16 @@ import { white } from "colors.css/js/colors"
 export default styled.div`
         display: block;
         
-        
+        width: 100%;
+        height: 100%;
+
         padding: 4em;
         border-radius: 30px;
 
         background: white;
         box-shadow: 0px 0px 33px -17px rgba(0,0,0,0.75);
 
-        @media screen and (max-width: 800px) {
+        @media screen and (max-width: 600px) {
                 padding: 2em;
         }
 
