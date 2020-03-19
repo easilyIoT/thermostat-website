@@ -5,9 +5,10 @@ const Wrapper = styled.div`
         display: flex;
 
         
-        border: 1px solid rgba(0, 0, 0, 0.15);
+        box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.15);
+        
         border-radius: 30px;
-        padding: 0.3em;
+        padding: 0.5em;
         
 `;
 

@@ -1,11 +1,15 @@
 import React, { useState } from 'react'
-import { NextPage } from 'next';
+import { NextPage, NextPageContext } from 'next';
+import { useRouter } from "next/router"
 import NextLink from "next/link"
 import { orange, red } from "colors.css/js/colors"
 import { useFormik, FormikHelpers } from "formik"
 import * as Yup from "yup"
 import axios from "axios"
 import cookies from "react-cookies"
+import nextCookies from 'next-cookies';
+
+import { redirect, getUserFromToken, isValidUser } from "../utils"
 
 import Flex from "../components/Flex"
 import FullPage from "../components/FullPage"
@@ -36,6 +40,7 @@ type TokenResponse = {
 const Login: NextPage<Props> = () => {
 
         const [isLoading, setIsLoading] = useState<boolean>(false);
+        const router = useRouter();
 
         const handleLogin = async ({ email, password }: FormValues, actions: FormikHelpers<FormValues>) => {
 
@@ -51,6 +56,8 @@ const Login: NextPage<Props> = () => {
                                 path: "/"
                         });
 
+                        router.push("/dashboard/regulate");
+
                 } catch (e) {
                         console.error(e.response);
                 } finally {
@@ -60,7 +67,7 @@ const Login: NextPage<Props> = () => {
                 actions.setSubmitting(false);
                 actions.resetForm({
                         values: {
-                                email: "",
+                                email,
                                 password: "",
                         }
                 });;
@@ -131,5 +138,20 @@ const Login: NextPage<Props> = () => {
         )
 }
 
+Login.getInitialProps = async (ctx: NextPageContext) => {
+        const { token } = nextCookies(ctx);
 
-export default Login
+
+        if (!token) {
+                return;
+        }
+
+        let user;
+
+        if (user = await getUserFromToken(token))
+                if (isValidUser(user)) {
+                        return redirect("/dashboard", ctx);
+                }
+}
+
+export default Login;

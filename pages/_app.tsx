@@ -90,6 +90,10 @@ const GlobalStyle = createGlobalStyle<IThemeWrapper>`
                 outline: none;
                 border: none;
         }
+
+        button {
+                cursor: pointer;
+        }
 `;
 
 export interface IProps {

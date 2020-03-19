@@ -21,7 +21,7 @@ export const FormInputGroup = styled.div<ColorProp>`
         border-radius: 30px;
 
         box-shadow: 0 0 19px 6px rgba(${props => props.rgb && `${props.rgb.r}, ${props.rgb.g}, ${props.rgb.b}` || "0,0,0"}, 0.17), 2px 17px 12px 0px rgba(${props => props.rgb && `${props.rgb.r}, ${props.rgb.g}, ${props.rgb.b}` || "0,0,0"}, 0.17);
-
+        
         padding: 0.2em 0.8em 0.2em 1em;
         margin-bottom: 2em;
 

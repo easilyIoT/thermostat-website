@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { NextPage } from 'next';
+import { NextPage, NextPageContext } from 'next';
 import NextLink from 'next/link';
 import { useRouter } from "next/router"
 import { red, orange } from "colors.css/js/colors"
@@ -7,7 +7,9 @@ import { useFormik, FormikHelpers } from "formik"
 import * as Yup from "yup"
 import axios from "axios"
 import cookies from "react-cookies"
+import nextCookies from 'next-cookies';
 
+import { redirect, getUserFromToken, isValidUser } from "../utils"
 
 import Flex from "../components/Flex"
 import FullPage from "../components/FullPage"
@@ -67,7 +69,7 @@ const Register: NextPage<Props> = () => {
                 actions.setSubmitting(false);
                 actions.resetForm({
                         values: {
-                                email: "",
+                                email,
                                 password: "",
                         }
                 });;
@@ -134,6 +136,20 @@ const Register: NextPage<Props> = () => {
                 </FullPage>
         )
 }
+Register.getInitialProps = async (ctx: NextPageContext) => {
+        const { token } = nextCookies(ctx);
 
+
+        if (!token) {
+                return;
+        }
+
+        let user;
+
+        if (user = await getUserFromToken(token))
+                if (isValidUser(user)) {
+                        return redirect("/dashboard", ctx);
+                }
+}
 
 export default Register

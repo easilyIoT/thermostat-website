@@ -17,8 +17,4 @@ export default styled.div<FlexProps>`
                 flex-direction: ${props => (props.rowToCol && "column") || (props.colToRow && "row") || "initial"};
         }
 
-        & > * {
-                flex: 1 1 auto;
-        }
-
 `;

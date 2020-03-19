@@ -2,11 +2,17 @@ import styled from "styled-components"
 
 import { white } from "colors.css/js/colors"
 
-export default styled.div`
+
+type SizeProps = {
+        w?: boolean,
+        h?: boolean
+}
+
+export default styled.div<SizeProps>`
         display: block;
         
-        width: 100%;
-        height: 100%;
+        ${props => props.w && `width: 100%;`}
+        ${props => props.h && `height: 100%;`}
 
         padding: 4em;
         border-radius: 30px;
