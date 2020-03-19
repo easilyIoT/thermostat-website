@@ -141,14 +141,15 @@ Register.getInitialProps = async (ctx: NextPageContext) => {
 
 
         if (!token) {
-                return;
+                return {};
         }
 
         let user;
 
         if (user = await getUserFromToken(token))
                 if (isValidUser(user)) {
-                        return redirect("/dashboard", ctx);
+                        redirect("/dashboard", ctx);
+                        return {};
                 }
 }
 

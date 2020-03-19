@@ -143,7 +143,7 @@ Login.getInitialProps = async (ctx: NextPageContext) => {
 
 
         if (!token) {
-                return;
+                return {};
         }
 
         let user;
