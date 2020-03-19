@@ -35,7 +35,7 @@ const Hidden: FunctionComponent<Props> = ({ hidden, children }) => {
 
         return (
                 <Wrapper>
-                        <TextArea isVisible={!isHidden} value={isHidden ? children.split("").map(e => "*").join("") : children} />
+                        <TextArea isVisible={!isHidden} readOnly value={isHidden ? children.split("").map(e => "*").join("") : children} />
                         <div style={{ cursor: "pointer" }} onClick={handleHide}><i className="fas fa-eye"/></div>
                 </Wrapper>
         );

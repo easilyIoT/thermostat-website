@@ -70,8 +70,8 @@ const Login: NextPage<Props> = () => {
                                 email,
                                 password: "",
                         }
-                });;
-        }
+                });
+        };
 
         const { errors, touched, handleChange, values, handleSubmit } = useFormik<FormValues>({
                 initialValues: {
@@ -94,8 +94,8 @@ const Login: NextPage<Props> = () => {
                                                 <Form onSubmit={handleSubmit}>
                                                         <CardTitle>
                                                                 <Title rgb={hexToRgb(red)}>Easily Thermostat</Title>
-								Login
-							</CardTitle>
+                                                                Login
+                                                        </CardTitle>
 
                                                         <FormInputGroup rgb={hexToRgb(orange)}>
                                                                 <i className="fas fa-envelope fa-2x" />
@@ -136,7 +136,7 @@ const Login: NextPage<Props> = () => {
                         </Bg>
                 </FullPage>
         )
-}
+};
 
 Login.getInitialProps = async (ctx: NextPageContext) => {
         const { token } = nextCookies(ctx);
@@ -146,12 +146,13 @@ Login.getInitialProps = async (ctx: NextPageContext) => {
                 return {};
         }
 
-        let user;
+        let user = await getUserFromToken(token);
 
-        if (user = await getUserFromToken(token))
+        if (user)
                 if (isValidUser(user)) {
-                        return redirect("/dashboard", ctx);
+                        redirect("/dashboard", ctx);
+                        return {};
                 }
-}
+};
 
 export default Login;

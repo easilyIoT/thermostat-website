@@ -10,6 +10,17 @@ export interface User {
         refresh_token: string;
 }
 
+export interface Task {
+        id: string,
+
+        name: string,
+
+        owner: string,
+
+        start: number,
+        done: number
+}
+
 export interface Device {
         _id: string,
 
@@ -41,7 +52,7 @@ export interface Group {
 
 export interface Task {
         id: string,
-        
+
         name: string,
         owner: string,
 

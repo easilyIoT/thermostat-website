@@ -5,7 +5,7 @@ import { orange, white } from "colors.css/js/colors"
 import axios from "axios"
 import styled from 'styled-components';
 import cookies from 'react-cookies';
-import { useFormik } from "formik"
+import { useFormik, Form, Field, FormikHelpers, FormikProps } from 'formik';
 
 import { redirect, getUserFromToken, isValidUser } from "../../utils"
 import { hexToRgb } from "../../utils/colors"
@@ -21,7 +21,7 @@ import Card from "../../components/Card"
 import Hidden from "../../components/Hidden";
 import Select from "../../components/Select"
 
-import { Device, Group, User } from "../../interfaces/api"
+import { Group, User } from "../../interfaces/api"
 import { OAUTH_API_URL, API_URL } from "../../config";
 
 type ResponsiveProps = {
@@ -31,13 +31,13 @@ type ResponsiveProps = {
 }
 
 
-const ResponsiveM = styled(M)<ResponsiveProps>`
+const ResponsiveM = styled(M) <ResponsiveProps>`
 	@media screen and (max-width: ${props => props.toBreak}px) {
 		${props => props.newKey}: ${props => props.newValue};
 	}
 `;
 
-const ResponsiveP = styled(P)<ResponsiveProps>`
+const ResponsiveP = styled(P) <ResponsiveProps>`
 	@media screen and (max-width: ${props => props.toBreak}px) {
 		${props => props.newKey}: ${props => props.newValue};
 	}
@@ -57,8 +57,22 @@ const SaveGroupButton = styled.button`
 	font-weight: 700;
 
 	margin-bottom: 1em;
+	
+	transform: scale(1);
+	
+	transition: transform ease-in-out 0.1s;
+	&:hover {
+		transform: scale(1.05);
+	}
+	
+	&:active {
+		transform: scale(1);
+	}
 `;
 
+type SelectGroupForm = {
+	group: string
+}
 
 type Props = {
 
@@ -67,21 +81,29 @@ type Props = {
 const Settings: NextPage<Props> = () => {
 	const [user, reFetchUser] = useUser();
 	const [groups, setGroups] = useState<Group[]>();
+
+
 	const token = cookies.load("token");
 
 	useEffect(() => {
+		console.log(user);
 		if (user && !groups)
 			fetchGroups();
 	}, [groups, user]);
 
-	const fetchGroups = async () => {
+	const fetchGroups = async (): Promise<void> => {
 		try {
 			const { data } = await axios.get<{ groups: Group[] }>(`${OAUTH_API_URL}/api/group`, {
 				headers: { Authorization: (user as User).access_token },
-
 			});
+
 			console.log(data);
+
 			setGroups(data.groups);
+			setValues({
+				group: data.groups[0] ? data.groups[0]._id : ""
+			});
+
 		} catch (e) {
 			console.log(e.response);
 			if (e.response && e.response.data.status === 401)
@@ -95,37 +117,55 @@ const Settings: NextPage<Props> = () => {
 					console.error(e.response);
 				}
 		}
-	}
+	};
 
+	const handleSaveGroupChanges = async ({ group }: SelectGroupForm, actions: FormikHelpers<SelectGroupForm>) => {
+		try {
+			await axios.post(`${API_URL}/user/saveGroup`, {
+				group
+			}, { headers: { Authorization: token }})
+		} catch(e) {
+			console.error(e.response);
+		}
+
+		actions.setSubmitting(false);
+	};
+
+	const { handleChange, handleSubmit, values, errors, touched, setValues } = useFormik<SelectGroupForm>({
+		initialValues: {
+			group: groups ? groups[0]._id : "none"
+		},
+		onSubmit: handleSaveGroupChanges
+	});
 
 	return (
 		<Layout title="Settings">
 			<Bg rgb={hexToRgb(orange)}>
 				<ResponsiveP all="3em" toBreak={600} newKey="padding" newValue="1em">
-
 					<Flex align={"center"} justify={"center"} direction={"row"} rowToCol={1100} >
 						<ResponsiveM key="1" right="3em" toBreak={1100} newKey="margin" newValue="0 0 2em 0">
 							<Card w h>
 								<M bottom="1em">
 									<Text fontSize="1.5em" fontWeight={600}>
 										Groups
-								</Text>
+										</Text>
 								</M>
-								<M bottom="2em">
-								<Text fontSize="1em">
-									<Select name="group">
-										{
-											groups
-												? groups.map((group, i) => (
-													<option key={group._id}>{group.name}</option>
-												))
-												: <option>Loading...</option>
-										}
-									</Select>
-									</Text>
-								</M>
-									<SaveGroupButton style={{ float: "right" }}>Save </SaveGroupButton>
-
+								<form onSubmit={handleSubmit}>
+									<M bottom="2em">
+										<Text fontSize="1em">
+											<Select value={values.group} onChange={handleChange} name="group">
+												{
+													groups
+														? groups.map((group, i) => (
+															<option key={group._id} value={group._id} label={group.name} />
+														))
+														: <option label="Loading..." />
+												}
+											</Select>
+										</Text>
+									</M>
+									<SaveGroupButton type="submit">Save</SaveGroupButton>
+								</form>
 							</Card>
 						</ResponsiveM>
 						<ResponsiveM key="2" left="3em" toBreak={1100} newKey="margin" newValue="0 0 2em 0">
@@ -155,9 +195,9 @@ const Settings: NextPage<Props> = () => {
 					</Flex>
 				</ResponsiveP>
 			</Bg>
-		</Layout>
+		</Layout >
 	)
-}
+};
 
 
 Settings.getInitialProps = async (ctx: NextPageContext) => {
@@ -168,8 +208,8 @@ Settings.getInitialProps = async (ctx: NextPageContext) => {
 		return {};
 	}
 
-	let user;
-	if (user = await getUserFromToken(token)) {
+	let user = await getUserFromToken(token);
+	if (user) {
 		if (!isValidUser(user))
 			redirect("/complete_registration", ctx);
 	} else
