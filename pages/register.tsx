@@ -51,7 +51,7 @@ const Register: NextPage<Props> = () => {
                                 email,
                                 password
                         });
-                
+
                         console.log(data);
 
                         cookies.save("token", data.token, {
@@ -59,7 +59,7 @@ const Register: NextPage<Props> = () => {
                         });
 
                         router.push("/complete_registration");
-                        
+
                 } catch (e) {
                         console.error(e.response);
                 } finally {
@@ -81,11 +81,11 @@ const Register: NextPage<Props> = () => {
                         password: ""
                 },
                 onSubmit: handleRegister,
-                validationSchema: Yup.object().shape<FormValues>({      
+                validationSchema: Yup.object().shape<FormValues>({
                         email: Yup.string().email(),
                         password: Yup.string().min(6).max(20)
                 }),
-                
+
         });
         return (
                 <FullPage>
@@ -97,7 +97,7 @@ const Register: NextPage<Props> = () => {
                                                                 <Title rgb={hexToRgb(orange)}>Easily Thermostat</Title>
 								Register
 							</CardTitle>
-                                                        
+
                                                         <FormInputGroup rgb={hexToRgb(orange)}>
                                                                 <i className="fas fa-envelope fa-2x" />
                                                                 <FormInput
@@ -122,7 +122,7 @@ const Register: NextPage<Props> = () => {
                                                         </FormInputGroup>
 
                                                         <FormButton onSubmit={handleSubmit as any}>{
-                                                                !isLoading 
+                                                                !isLoading
                                                                         ? "Submit"
                                                                         : <div><i className="fas fa-spinner fa-spin"></i></div>
                                                         }</FormButton>
@@ -151,6 +151,8 @@ Register.getInitialProps = async (ctx: NextPageContext) => {
                         redirect("/dashboard", ctx);
                         return {};
                 }
+
+        return {};
 }
 
 export default Register

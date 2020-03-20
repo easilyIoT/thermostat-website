@@ -1,12 +1,14 @@
 import Document, { Head, NextScript, Main, DocumentInitialProps, DocumentContext } from "next/document";
 import { ServerStyleSheet } from "styled-components"
 import { ReactElement } from "react";
+import { CSSProp } from "styled-components"
 
 
-export type Props = {
+
+type Props = {
         styleTags: ReactElement<{}>[]
 }
-export interface InitialProps extends DocumentInitialProps {
+interface InitialProps extends DocumentInitialProps {
         styleTags: ReactElement<{}>[]
 }
 
@@ -51,5 +53,12 @@ export default class MyDocument extends Document<Props> {
                                 </body>
                         </html>
                 )
+        }
+}
+
+
+declare module "react" {
+        interface Attributes {
+                css?: any;
         }
 }

@@ -2,6 +2,7 @@
 /// <reference types="next/types/global" />
 
 
+
 declare module 'colors.css/js/colors' {
         export var aqua: "#7fdbff";
         export var blue: "#0074d9";
@@ -13,12 +14,12 @@ declare module 'colors.css/js/colors' {
         export var red: "#ff4136";
         export var maroon: "#85144b";
         export var orange: "#ff851b";
-        export var purple:  '#b10dc9';
-        export var yellow:  '#ffdc00';
+        export var purple: '#b10dc9';
+        export var yellow: '#ffdc00';
         export var fuchsia: '#f012be';
-        export var gray:    '#aaaaaa';
-        export var white:   '#ffffff';
-        export var black:   '#111111';
+        export var gray: '#aaaaaa';
+        export var white: '#ffffff';
+        export var black: '#111111';
         export var silver: '#dddddd';
 };
 

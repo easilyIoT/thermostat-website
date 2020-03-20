@@ -153,6 +153,8 @@ Login.getInitialProps = async (ctx: NextPageContext) => {
                         redirect("/dashboard", ctx);
                         return {};
                 }
+
+        return {};
 };
 
 export default Login;

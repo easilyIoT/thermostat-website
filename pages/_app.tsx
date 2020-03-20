@@ -94,6 +94,17 @@ const GlobalStyle = createGlobalStyle<IThemeWrapper>`
         button {
                 cursor: pointer;
         }
+
+        button:focus {
+          outline:none;
+        }
+        ::-moz-focus-inner {
+                border:0;
+        }
+
+   
+        
+      
 `;
 
 export interface IProps {
@@ -126,3 +137,4 @@ class MyApp extends App<IProps> {
 }
 
 export default withApollo(MyApp);
+        

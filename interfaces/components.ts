@@ -29,3 +29,7 @@ export type FontProps = {
         fontSize?: string | number;
         fontWeight?: 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
 }
+
+export type CenterProp = {
+        center?: boolean;
+}
