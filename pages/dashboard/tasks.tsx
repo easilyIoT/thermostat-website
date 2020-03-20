@@ -70,7 +70,7 @@ const TaskInfo = styled.div`
 			"done";
 
 		grid-template-columns: 1fr;
-		grid-template-rows: 4em 3fr 2.5em 1fr 2.5em 1fr;
+		grid-template-rows: 4em 3fr 2.5em auto 2.5em auto;
 
 	}
 
@@ -162,7 +162,6 @@ const Tasks: NextPage<Props> = ({ }) => {
 		? `0${(i / 2) | 0}`:(i / 2) | 0}:${i % 2 ? "30":"00"}`
 	);
 
-	console.log(hours);
 
 	useEffect(() => {
 		if (!tasks)

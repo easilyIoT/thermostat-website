@@ -108,13 +108,20 @@ const Picker: FunctionComponent<Props & Breakable> = ({ handleClick, values, bre
 		<Scrollable breakAt={breakAt}>
 			{values.length
 				? values.map((value, i) =>
-
-					<Pickable
-						onClick={() => handlePick(value)}
-						picked={selectedValue === value}
+					<div
+						css={`
+							width: 100%;
+							height: 100%;
+						`}
+						key={i}
 					>
-						{value}
-					</Pickable>
+						<Pickable
+							onClick={() => handlePick(value)}
+							picked={selectedValue === value}
+						>
+							{value}
+						</Pickable>
+					</div>
 				)
 				: <CenterInTheScreen>empty</CenterInTheScreen>
 			}
