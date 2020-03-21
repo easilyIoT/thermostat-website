@@ -139,6 +139,10 @@ const Button = styled.button`
 		transform: scale(0.9);
 	}
 
+	@media screen and (max-width: 400px) {
+		
+		padding: 0.5em 1em 0.5em 1em;
+	}
 `;
 
 const SectionTitle = styled.div`
@@ -194,7 +198,7 @@ const Tasks: NextPage<Props> = ({ }) => {
 				<Bg>
 					<Grid>
 						<TaskList>
-							<Text center fontSize="2em" ><P all="0.5em">Task List</P></Text>
+							<Text center fontSize="1em" ><P all="0.5em">Task List</P></Text>
 							<Picker values={tasks ? tasks.map(task => task.name) : []} handleClick={handleSelectTask} />
 						</TaskList>
 						<TaskInfo>
