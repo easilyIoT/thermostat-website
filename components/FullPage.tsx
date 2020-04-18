@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 
+import { fullViewPort } from "../utils/styles"
 
 export default styled.div`
         height: 100vh;
@@ -8,6 +9,6 @@ export default styled.div`
         overflow: hidden;
         
         @media screen and (max-width: 600px) {
-        	height: calc(100vh - ${props => props.theme.navSize}em);
+        	height: calc(${fullViewPort} - ${props => props.theme.navSize}em);
         }
 `

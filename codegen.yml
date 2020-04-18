@@ -1,0 +1,13 @@
+schema: '../api/schema.graphql'
+documents: './graphql/**/*.{tsx,ts}'
+overwrite: true
+generates:
+  ./graphql/types.tsx:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      withHOC: false
+      withHooks: true
+      withComponent: false

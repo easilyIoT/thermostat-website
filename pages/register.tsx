@@ -22,7 +22,7 @@ import Link from "../components/Link"
 
 import { API_URL } from "../config"
 
-import { hexToRgb } from "../utils/colors"
+import { hexToRgb } from "../utils/styles"
 
 
 type Props = {

@@ -20,7 +20,7 @@ import Link from "../components/Link"
 import ConnectButton from "../components/ConnectButton"
 
 
-import { hexToRgb } from "../utils/colors"
+import { hexToRgb } from "../utils/styles"
 import { objectToURI, redirect, validateToken, isValidUser, getUserFromToken } from "../utils"
 
 import { User } from "../interfaces/api"

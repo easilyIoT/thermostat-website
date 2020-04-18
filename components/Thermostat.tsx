@@ -545,7 +545,12 @@ type Transforms = {
         }
 }
 
-const Thermostat: React.FunctionComponent<any> = () => {
+
+type Props = {
+        handleChange: (newValue: number) => void
+};
+
+const Thermostat: React.FunctionComponent<Props> = ({ handleChange }) => {
 
         const [gradi, setGradi] = useState<number>(19);
         const [isModified, setIsModified] = useState<boolean>(false);
@@ -562,7 +567,10 @@ const Thermostat: React.FunctionComponent<any> = () => {
 
         const handleDecrease = () => {
                 const newGradi = gradi - 1;
-
+                setGradi(newGradi);
+                handleChange(newGradi);
+                
+                setIsModified(true);
                 
                 
                 if (newGradi >= 18) {
@@ -590,13 +598,15 @@ const Thermostat: React.FunctionComponent<any> = () => {
                                 }
                         })
                 }
-                setGradi(newGradi);
-                setIsModified(true);
+
+                
         }
 
         const handleIncrease = () => {
                 const newGradi = gradi + 1;
                 setGradi(newGradi);
+                handleChange(newGradi);
+
                 setIsModified(true);
 
                 if (newGradi > 19)

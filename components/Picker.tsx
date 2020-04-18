@@ -4,7 +4,8 @@ import { orange, white } from "colors.css/js/colors"
 
 type Props = {
 	handleClick: (hour: string) => void | Promise<void>,
-	values: string[]
+	values: string[],
+	initialValue?: string
 };
 
 type Breakable = {
@@ -23,6 +24,9 @@ const Scrollable = styled.div<Breakable>`
 	width: 100%;
 	height: 100%;
 
+	align-items: flex-start;
+	
+
 	&::-webkit-scrollbar {
 		width: 5px;
 
@@ -37,15 +41,13 @@ const Scrollable = styled.div<Breakable>`
 		border-radius: 10px;
         }
 
+
 	${props => props.breakAt && `
 	@media screen and (max-width: ${props.breakAt}px) {
 		flex-direction: row;
 	}
 	`}
 
-	& > * {
-		flex: 1 1 200px;
-	}
 `;
 
 const Pickable = styled.div<{ picked?: boolean }>`
@@ -86,20 +88,24 @@ const CenterInTheScreen = styled.div`
 
 	font-weight: 300;
 
-`;
-const Picker: FunctionComponent<Props & Breakable> = ({ handleClick, values, breakAt }) => {
-	const [selectedValue, setSelectedValue] = useState<string>("");
 
+`;
+
+
+
+const Picker: FunctionComponent<Props & Breakable> = ({ handleClick, values, breakAt, initialValue }) => {
+	const [selectedValue, setSelectedValue] = useState<string>(initialValue || "");
 
 	useEffect(() => {
-		handleClick(selectedValue);
-	}, [selectedValue]);
+		if(initialValue)
+			setSelectedValue(initialValue);
+	}, [initialValue])
 
-	const handlePick = (hour: string) => {
+	const handlePick = (hour: string) => () => {
 
 		setSelectedValue(selectedValue !== hour ? hour : "");
 
-		handleClick(selectedValue);
+		handleClick(hour);
 	};
 
 
@@ -111,12 +117,11 @@ const Picker: FunctionComponent<Props & Breakable> = ({ handleClick, values, bre
 					<div
 						css={`
 							width: 100%;
-							height: 100%;
 						`}
 						key={i}
 					>
 						<Pickable
-							onClick={() => handlePick(value)}
+							onClick={handlePick(value)}
 							picked={selectedValue === value}
 						>
 							{value}

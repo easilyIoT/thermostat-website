@@ -8,7 +8,7 @@ import cookies from 'react-cookies';
 import { useFormik, Form, Field, FormikHelpers, FormikProps } from 'formik';
 
 import { redirect, getUserFromToken, isValidUser } from "../../utils"
-import { hexToRgb } from "../../utils/colors"
+import { hexToRgb } from "../../utils/styles"
 import useUser from "../../hooks/useUser"
 
 import Layout from '../../components/Layout'

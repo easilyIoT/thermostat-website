@@ -4,7 +4,7 @@ import axios from "axios"
 import { isUndefined } from 'util';
 
 import { API_URL } from '../config';
-import { User } from '../interfaces/api';
+import { User } from "../graphql/types"
 
 export const objectToURI = (object: { [key: string]: string | number | boolean }) =>
         Object.keys(object)

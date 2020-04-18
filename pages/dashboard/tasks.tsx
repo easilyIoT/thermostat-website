@@ -8,11 +8,11 @@ import styled, { css } from 'styled-components';
 import { API_URL } from "../../config"
 
 import { redirect, getUserFromToken, isValidUser } from "../../utils"
-import { hexToRgb } from "../../utils/colors";
+import { hexToRgb } from "../../utils/styles";
 
 import useUser from "../../hooks/useUser";
+import { useCreateTaskMutation, useTasksLazyQuery, Task, Time } from "../../graphql/types"
 
-import { User, Task } from "../../interfaces/api"
 
 import Layout from '../../components/Layout'
 import FullPage from "../../components/FullPage";
@@ -20,9 +20,17 @@ import Bg from "../../components/Bg";
 import Picker from "../../components/Picker"
 import Text from "../../components/Text"
 import P from "../../components/P"
+import CheckBox from "../../components/Checkbox";
 
 type Props = {
 }
+
+type WPTask = {
+	name: string,
+	daily: boolean
+	start?: Time,
+	done?: Time,
+};
 
 const Grid = styled.div`
 	display: grid;
@@ -117,13 +125,13 @@ const BottomBar = styled.div`
 	}
 `;
 
-const Button = styled.button`
+const Button = styled.button <{ activated?: boolean, deactivated?: boolean }>`
 	
 	margin: 1em;
 	padding: 1em 1.5em 1em 1.5em;
 
-	color: #2786f7;
-	background-color: #e8f2ff;
+	color: ${props => !props.activated && "#2786f7" || "white"};
+	background-color: ${props => !props.activated && "#e8f2ff" || "#2786f7"};
 
 	border-radius: 10px;
 	
@@ -131,7 +139,8 @@ const Button = styled.button`
 	border: none;
 	outline: none;
 
-	transition: transform ease-in 100ms;
+	${props => props.deactivated && "transition: transform ease-in 100ms;"}
+	
 	&:active{
 		background-color: #2786f7;
 		color: white;
@@ -141,7 +150,7 @@ const Button = styled.button`
 
 	@media screen and (max-width: 400px) {
 		
-		padding: 0.5em 1em 0.5em 1em;
+		/*padding: 0.5em 1em 0.5em 1em;*/
 	}
 `;
 
@@ -157,13 +166,53 @@ const SectionTitle = styled.div`
 	width: 100%;
 `;
 
+const Form = styled.form`
+	display: block;
+
+	padding: 3em;
+
+	width: 100%;
+	height: 100%;
+
+	@media screen and (max-width: 500px) {
+		padding: 2em;
+	}
+`;
+
+const InputSpan = styled.div`
+	margin-bottom: 0.6em;
+	
+	width: 100%;
+`;
+
+const Input = styled.input`
+	
+	border-radius: 10px;
+	padding: 1em;
+
+	margin-bottom: 3em;
+
+	border: 1px solid #d3d2d2;
+
+	filter: brightness();
+`;
+
+
 const Tasks: NextPage<Props> = ({ }) => {
 	const [user, reFetchUser] = useUser();
+	const [getTasks, getTasksData] = useTasksLazyQuery();
+	const [createTask, createTaskData] = useCreateTaskMutation();
+
+	const [mode, setMode] = useState<"editing" | "creating" | null>();
 	const [tasks, setTasks] = useState<Task[]>();
-	const token = cookies.load("token");
+	const [actualTask, setActualTask] = useState<WPTask>({
+		name: "",
+		daily: false
+	});
 
 	const hours = Array(48).fill("").map((_, i) => `${(i / 2) < 10
-		? `0${(i / 2) | 0}`:(i / 2) | 0}:${i % 2 ? "30":"00"}`
+		? `0${(i / 2) | 0}`
+		: (i / 2) | 0}:${i % 2 ? "30" : "00"}`
 	);
 
 
@@ -173,22 +222,132 @@ const Tasks: NextPage<Props> = ({ }) => {
 
 	}, [tasks]);
 
+	useEffect(() => {
+		if (getTasksData.data && getTasksData.data.tasks)
+			setTasks(getTasksData.data.tasks.map<Task>(task => ({
+				id: task.id,
+				name: task.name,
+				start: task.start,
+				done: task.done,
+				owner: task.owner,
+				daily: task.daily
+			})));
+	}, [getTasksData.data])
+
+	useEffect(() => {
+		console.log(createTaskData.error);
+	}, [createTaskData.error]);
+
+	useEffect(() => console.log(actualTask), [actualTask]);
 
 	const fetchTasks = async () => {
+		console.log("Fetching")
+		const token = cookies.load("token");
+
 		try {
-			const { data } = await axios.get<{ tasks: Task[] }>(`${API_URL}/task`, {
-				headers: { Authorization: token }
+			getTasks({
+				context: {
+					headers: {
+						authorization: token
+					}
+				}
 			});
 
-			console.log(data);
-			setTasks(data.tasks);
 		} catch (e) {
-			console.error(e.response);
+			console.error(e.response, e);
 		}
 	};
 
 	const handleSelectTask = (taskName: string) => {
-		console.log(taskName);
+		if (!tasks) return;
+
+		if (mode !== "editing") {
+			const task = tasks.find(task => task.name === taskName);
+			if (!task) return;
+
+			setMode("editing");
+			setActualTask({
+				...task
+			});
+
+		} else {
+			setMode(null);
+		}
+
+	}
+
+	const setCreateMode = () => {
+		setActualTask({
+			name: "",
+			daily: false
+		});
+
+		setMode(mode === "creating" ? null : "creating");
+	};
+
+	const handleChangeNameOfTheTask = (e: any) => {
+		const newValue = e.target.value;
+
+		setActualTask(state => ({
+			...state,
+			name: newValue
+		}));
+
+	};
+
+	const handleChangeDailySchedulation = (checked: boolean) => {
+		setActualTask(state => ({
+			...state,
+			daily: checked
+		}));
+	};
+
+	const handleSelectStartHour = (hour: string) => {
+		setActualTask(state => ({
+			...state,
+			start: {
+				hour: parseInt(hour.split(":")[0]),
+				minute: parseInt(hour.split(":")[1])
+			}
+		}))
+	}
+
+	const handleSelectDoneHour = (hour: string) => {
+		setActualTask(state => ({
+			...state,
+			done: {
+				hour: parseInt(hour.split(":")[0]),
+				minute: parseInt(hour.split(":")[1])
+			}
+		}));
+	}
+
+	const handleSave = async () => {
+		if (!mode)
+			return;
+
+		const token = cookies.load("token");
+
+
+		if (!actualTask.start || !actualTask.done)
+			return;
+
+		if (mode === "creating")
+			createTask({
+				context: {
+					headers: {
+						authorization: token
+					}
+				},
+				variables: {
+					name: actualTask.name,
+					start: actualTask.start,
+					done: actualTask.done,
+					daily: actualTask.daily
+				}
+			})
+		// Edit 
+
 	}
 
 
@@ -215,15 +374,35 @@ const Tasks: NextPage<Props> = ({ }) => {
 							`}>End</SectionTitle>
 
 							<Info css={`grid-area: info;`}>
+								{
+									mode === "creating"
+										? <Form>
 
+											<InputSpan>Name</InputSpan>
+											<Input onChange={handleChangeNameOfTheTask} placeholder="Name of the task" />
+											<br />
+											<CheckBox onChange={handleChangeDailySchedulation} value={actualTask.daily} >daily</CheckBox>
+
+										</Form>
+										: mode === "editing"
+											? <Form>
+
+												<InputSpan>Name</InputSpan>
+												<Input onChange={handleChangeNameOfTheTask} defaultValue={actualTask.name} placeholder="Name of the task" />
+												<br />
+												<CheckBox onChange={handleChangeDailySchedulation} value={actualTask.daily} >daily</CheckBox>
+
+											</Form>
+											: <div>Null</div>
+								}
 							</Info>
 
-							<Picker breakAt={900} values={hours} css={`grid-area: start;`} handleClick={h => { }} />
-							<Picker breakAt={900} values={hours} css={`grid-area: done;`} handleClick={h => { }} />
+							<Picker {...mode === "editing" ? { initialValue: actualTask && actualTask.start && `${actualTask.start.hour < 10 ? `0${actualTask.start.hour}` : actualTask.start.hour}:${actualTask.start.minute < 10 ? `0${actualTask.start.minute}` : actualTask.start.minute}` || ""} : {initialValue: ""}} breakAt={900} values={hours} css={`grid-area: start;`} handleClick={handleSelectStartHour} />
+							<Picker {...mode === "editing" ? { initialValue: actualTask && actualTask.done && `${actualTask.done.hour < 10 ? `0${actualTask.done.hour}` : actualTask.done.hour}:${actualTask.done.minute < 10 ? `0${actualTask.done.minute}` : actualTask.done.minute}` || ""} : {initialValue: ""}} breakAt={900} values={hours} css={`grid-area: done;`} handleClick={handleSelectDoneHour} />
 						</TaskInfo>
 						<BottomBar>
-							<Button css={`float: left;`}>Create</Button>
-							<Button css={`float: right;`}>Save</Button>
+							<Button css={`float: left;`} activated={mode === "creating"} deactivated={mode === "editing"} onClick={setCreateMode}>Create</Button>
+							<Button css={`float: right;`} onClick={handleSave} >Save</Button>
 						</BottomBar>
 					</Grid>
 				</Bg>

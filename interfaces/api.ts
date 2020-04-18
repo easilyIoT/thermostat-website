@@ -1,25 +1,5 @@
+import { Time } from "../graphql/types"
 
-
-export interface User {
-        id: string;
-
-        email: string;
-        passowrd: string;
-
-        access_token: string;
-        refresh_token: string;
-}
-
-export interface Task {
-        id: string,
-
-        name: string,
-
-        owner: string,
-
-        start: number,
-        done: number
-}
 
 export interface Device {
         _id: string,
@@ -50,10 +30,4 @@ export interface Group {
         categories: string[]
 }
 
-export interface Task {
-        id: string,
 
-        name: string,
-        owner: string,
-
-}

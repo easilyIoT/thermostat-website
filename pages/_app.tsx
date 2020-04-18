@@ -11,130 +11,145 @@ import colors from "colors.css/js/colors"
 import "normalize.css/normalize.css"
 
 export interface ITheme {
-        navSize: number,
+	navSize: number,
 
-        textPrimary: string,
-        textSecondary: string,
+	textPrimary: string,
+	textSecondary: string,
 
-        bgPrimary: string,
-        bgSecondary: string,
+	bgPrimary: string,
+	bgSecondary: string,
 
-        primary: string,
+	primary: string,
 
-        transitionSpeed: string,
+	transitionSpeed: string,
 
-        iconColor: string,
+	iconColor: string,
 }
 
 export interface IThemeWrapper {
-        theme: ITheme
+	theme: ITheme
 }
 
 export const theme: ITheme = {
-        navSize: 5,
+	navSize: 5,
 
-        textPrimary: "#b6b6b6",
-        textSecondary: "#ececec",
+	textPrimary: "#b6b6b6",
+	textSecondary: "#ececec",
 
-        bgPrimary: "#23232e",
-        bgSecondary: "#141418",
+	bgPrimary: "#23232e",
+	bgSecondary: "#141418",
 
-        primary: colors.orange,
+	primary: colors.orange,
 
-        transitionSpeed: "600ms",
+	transitionSpeed: "600ms",
 
-        iconColor: colors.orange
+	iconColor: colors.orange
 }
 
 const GlobalStyle = createGlobalStyle<IThemeWrapper>`
-        :root {
-                font-size: 16px;
-                font-family: 'Open Sans', sans-serif;
-        }
+	:root {
+		font-size: 16px;
+		font-family: 'Open Sans', sans-serif;
+	}
 
-        * {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-        }
-              
+	* {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+	}
+	      
   
 
-        body::-webkit-scrollbar {
-                width: 0.5rem;
-        }
+	body::-webkit-scrollbar {
+		width: 0.5rem;
+	}
 
-        body::-webkit-scrollbar-track {
-                background: transparent;
-        }
+	body::-webkit-scrollbar-track {
+		background: transparent;
+	}
 
-        body::-webkit-scrollbar-thumb {
-                background: ${props => props.theme.iconColor};
-                border-radius: 30px
-        }
+	body::-webkit-scrollbar-thumb {
+		background: ${props => props.theme.iconColor};
+		border-radius: 30px
+	}
 
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover, 
-        input:-webkit-autofill:focus,
-        textarea:-webkit-autofill,
-        textarea:-webkit-autofill:hover,
-        textarea:-webkit-autofill:focus,
-        select:-webkit-autofill,
-        select:-webkit-autofill:hover,
-        select:-webkit-autofill:focus {
-                -webkit-box-shadow: nice bug;
-                transition: background-color 5000s ease-in-out 0s;
-        }
 
-        button, input {
-                outline: none;
-                border: none;
-        }
 
-        button {
-                cursor: pointer;
-        }
+	input:-webkit-autofill,
+	input:-webkit-autofill:hover, 
+	input:-webkit-autofill:focus,
+	textarea:-webkit-autofill,
+	textarea:-webkit-autofill:hover,
+	textarea:-webkit-autofill:focus,
+	select:-webkit-autofill,
+	select:-webkit-autofill:hover,
+	select:-webkit-autofill:focus {
+		-webkit-box-shadow: nice bug;
+		transition: background-color 5000s ease-in-out 0s;
+	}
 
-        button:focus {
-          outline:none;
-        }
-        ::-moz-focus-inner {
-                border:0;
-        }
+	button, input {
+		outline: none;
+		border: none;
+	}
+
+	button {
+		cursor: pointer;
+	}
+
+	button:focus {
+	  outline:none;
+	}
+	::-moz-focus-inner {
+		border:0;
+	}
 
    
-        
+	
       
 `;
 
 export interface IProps {
-        apollo: ApolloClient<NormalizedCacheObject>
+	apollo: ApolloClient<NormalizedCacheObject>
 }
 
 class MyApp extends App<IProps> {
 
-        render() {
+	componentDidMount() {
 
-                const { Component, pageProps, apollo } = this.props;
-                return (
-                        <React.Fragment>
-                                <Head>
-                                        <title>Easily Thermostat</title>
+		let vh = window.innerHeight * 0.01;
 
-                                        <meta charSet='utf-8' />
-                                        <meta httpEquiv='X-UA-Compatible' content='IE=edge' />
-                                        <meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no' />
-                                </Head>
-                                <ApolloProvider client={apollo}>
-                                        <ThemeProvider theme={theme}>
-                                                <GlobalStyle />
-                                                <Component {...pageProps} />
-                                        </ThemeProvider>
-                                </ApolloProvider>
-                        </React.Fragment>
-                )
-        }
+		document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+		window.addEventListener('resize', () => {
+			// We execute the same script as before
+			vh = window.innerHeight * 0.01;
+			document.documentElement.style.setProperty('--vh', `${vh}px`);
+		});
+	}
+
+	render() {
+
+		const { Component, pageProps, apollo } = this.props;
+
+		return (
+			<React.Fragment>
+				<Head>
+					<title>Easily Thermostat</title>
+
+					<meta charSet='utf-8' />
+					<meta httpEquiv='X-UA-Compatible' content='IE=edge' />
+					<meta name='viewport' content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no' />
+				</Head>
+				<ApolloProvider client={apollo}>
+					<ThemeProvider theme={theme}>
+						<GlobalStyle />
+						<Component {...pageProps} />
+					</ThemeProvider>
+				</ApolloProvider>
+			</React.Fragment>
+		)
+	}
 }
 
 export default withApollo(MyApp);
-        

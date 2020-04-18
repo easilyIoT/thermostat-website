@@ -2,7 +2,10 @@ import * as React from 'react'
 import Head from 'next/head'
 import styled from "styled-components"
 
+
 import Navbar from "./Navbar"
+
+import { fullViewPort } from "../utils/styles"
 
 type Props = {
 	title?: string
@@ -14,7 +17,7 @@ const Main = styled.main`
 
 	@media screen and (max-width: 600px) {
 		margin-left: 0;	
-		height: calc(100vh - ${props => props.theme.navSize}em);
+		height: calc(${fullViewPort} - ${props => props.theme.navSize}em);
 	}
 
 `;

@@ -2,32 +2,51 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { load } from 'react-cookies';
 
-import { User } from "../interfaces/api"
-import { API_URL } from '../config/index';
+import { User, useMeQuery } from "../graphql/types";
+import { API_URL, OAUTH_API_URL } from '../config/index';
 
-export default (): [User | undefined, () => Promise<void>] => {
+export default (): [User | undefined, Function, Function, Function] => {
+        const { data, loading, error, fetchMore } = useMeQuery();
         const [user, setUser] = useState<User>();
-        const token = load("token");
         
-        
-        const fetchUser = async () => {
-                try {
-                        const { data } = await axios.get<{ user: User }>(`${API_URL}/auth/user`, {
-                                headers: { Authorization: token }
-                        });
 
-                        setUser(data.user);
+        useEffect(() => {
+                setUser(data?.me);
+        }, [data]);
+
+        useEffect(() => {
+                if (error) console.error(error);
+        }, [error]);
+        
+
+        const validateToken = async () => {
+                if (!user) return;
+
+                try {
+                        await axios.post(`${OAUTH_API_URL}/auth/verify`, {}, {
+                                headers: {
+                                        Authorization: user.access_token
+                                }
+                        });
                 } catch (e) {
-                        console.error(e.response.data);  
+                        regenToken();
                 }
         }
 
-        
-        useEffect(() => {
-                if (!user)
-                        fetchUser();
-        }, []);
+        const regenToken = async () => {
+                const token = load("token");
 
+                try {
+                        await axios.post(`${API_URL}/auth/regenToken`, {}, {
+                                headers: {
+                                        Authorization: token
+                                }
+                        });
 
-        return [user, fetchUser];
+                        fetchMore({} as any);
+                } catch (e) {
+                        console.error(e.response || e);
+                }
+        }
+        return [user, fetchMore, validateToken, regenToken];
 }
