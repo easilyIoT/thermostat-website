@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled, { keyframes } from 'styled-components';
 
 
@@ -547,10 +547,11 @@ type Transforms = {
 
 
 type Props = {
-        handleChange: (newValue: number) => void
+        handleChange: (newValue: number) => void,
+        value: number
 };
 
-const Thermostat: React.FunctionComponent<Props> = ({ handleChange }) => {
+const Thermostat: React.FunctionComponent<Props> = ({ handleChange, value }) => {
 
         const [gradi, setGradi] = useState<number>(19);
         const [isModified, setIsModified] = useState<boolean>(false);
@@ -564,6 +565,46 @@ const Thermostat: React.FunctionComponent<Props> = ({ handleChange }) => {
                         delay: 0
                 }
         });
+
+        useEffect(() => {
+                setGradi(value);
+                
+                if (value == 18) {
+                        setTransforms({
+                                left: {
+                                        rotation: 0,
+                                        delay: 0
+                                },
+                                right: {
+                                        rotation: 180,
+                                        delay: 0
+                                }
+                        })
+                } else if (value < 18) {
+                        setTransforms({
+                                left: {
+                                        rotation: 0,
+                                        delay: 0
+                                },
+                                right: {
+                                        rotation: value * 10,
+                                        delay: 0
+                                }
+                        });
+                } else {
+                        setTransforms({
+                                left: {
+                                        rotation: (value - 18) * 10,
+                                        delay: 0
+                                },
+                                right: {
+                                        rotation: 180,
+                                        delay: 0
+                                }
+                        })
+                }
+        }, [value]);
+
 
         const handleDecrease = () => {
                 const newGradi = gradi - 1;

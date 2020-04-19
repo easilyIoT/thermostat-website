@@ -19,14 +19,19 @@ type Props = {
 
 }
 
+function getStateFromTemperatureController(group: Group): number {
+	return parseInt(group.devices.find(device => device.type === "ThermostatController")?.state || "19");
+}
+
 const Regulate: NextPage<Props> = () => {
 	const [user, refetchUser, validation, regen] = useUser();
 	const [group, setGroup] = useState<Group>();
-	
+	const [temperature, setTemperature] = useState<number>(19);
 
 	useEffect(() => {
 		fetchGroup();
 	}, [user]);
+
 
 	const fetchGroup = async () => {
 		if (!user) return;
@@ -40,8 +45,9 @@ const Regulate: NextPage<Props> = () => {
 				}
 			});
 			
-			console.log(data.group);
 			setGroup(data.group);
+			
+			setTemperature(getStateFromTemperatureController(data.group));
 		} catch (e) {
 			console.log(e.response || e);
 		}
@@ -64,6 +70,7 @@ const Regulate: NextPage<Props> = () => {
 				}
 			});
 			
+			setTemperature(value);
 			
 			
 		} catch (e) {
@@ -76,7 +83,7 @@ const Regulate: NextPage<Props> = () => {
 	}
 	return (
 		<Layout title="Regulate">
-			<Thermostat handleChange={handleNewThemperature} />
+			<Thermostat value={temperature} handleChange={handleNewThemperature} />
 		</Layout>
 	)
 }

@@ -97,7 +97,7 @@ const Picker: FunctionComponent<Props & Breakable> = ({ handleClick, values, bre
 	const [selectedValue, setSelectedValue] = useState<string>(initialValue || "");
 
 	useEffect(() => {
-		if(initialValue)
+		if(initialValue || initialValue === "")
 			setSelectedValue(initialValue);
 	}, [initialValue])
 

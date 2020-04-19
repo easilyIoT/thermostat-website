@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { NextPage, NextPageContext } from 'next';
 import nextCookies from 'next-cookies';
 import cookies from "react-cookies";
@@ -26,6 +26,7 @@ type Props = {
 }
 
 type WPTask = {
+	initialName: string,
 	name: string,
 	daily: boolean
 	start?: Time,
@@ -154,6 +155,9 @@ const Button = styled.button <{ activated?: boolean, deactivated?: boolean }>`
 	}
 `;
 
+
+
+
 const SectionTitle = styled.div`
 	display: flex;
 
@@ -194,7 +198,6 @@ const Input = styled.input`
 
 	border: 1px solid #d3d2d2;
 
-	filter: brightness();
 `;
 
 
@@ -207,8 +210,10 @@ const Tasks: NextPage<Props> = ({ }) => {
 	const [tasks, setTasks] = useState<Task[]>();
 	const [actualTask, setActualTask] = useState<WPTask>({
 		name: "",
+		initialName: "",
 		daily: false
 	});
+
 
 	const hours = Array(48).fill("").map((_, i) => `${(i / 2) < 10
 		? `0${(i / 2) | 0}`
@@ -223,7 +228,7 @@ const Tasks: NextPage<Props> = ({ }) => {
 	}, [tasks]);
 
 	useEffect(() => {
-		if (getTasksData.data && getTasksData.data.tasks)
+		if (getTasksData.data && getTasksData.data.tasks) {
 			setTasks(getTasksData.data.tasks.map<Task>(task => ({
 				id: task.id,
 				name: task.name,
@@ -232,11 +237,17 @@ const Tasks: NextPage<Props> = ({ }) => {
 				owner: task.owner,
 				daily: task.daily
 			})));
+		}
 	}, [getTasksData.data])
 
 	useEffect(() => {
 		console.log(createTaskData.error);
 	}, [createTaskData.error]);
+
+	useEffect(() => {
+		if (createTaskData.data)
+			fetchTasks();
+	}, [createTaskData.data]);
 
 	useEffect(() => console.log(actualTask), [actualTask]);
 
@@ -245,13 +256,7 @@ const Tasks: NextPage<Props> = ({ }) => {
 		const token = cookies.load("token");
 
 		try {
-			getTasks({
-				context: {
-					headers: {
-						authorization: token
-					}
-				}
-			});
+			getTasks();
 
 		} catch (e) {
 			console.error(e.response, e);
@@ -263,15 +268,28 @@ const Tasks: NextPage<Props> = ({ }) => {
 
 		if (mode !== "editing") {
 			const task = tasks.find(task => task.name === taskName);
+
 			if (!task) return;
 
 			setMode("editing");
 			setActualTask({
-				...task
+				...task,
+				initialName: task.name
 			});
 
 		} else {
-			setMode(null);
+			if (taskName === actualTask.initialName)
+				setMode(null);
+			else {
+				const task = tasks.find(task => task.name === taskName);
+
+				if (!task) return;
+
+				setActualTask({
+					...task,
+					initialName: task.name
+				});
+			}
 		}
 
 	}
@@ -279,8 +297,10 @@ const Tasks: NextPage<Props> = ({ }) => {
 	const setCreateMode = () => {
 		setActualTask({
 			name: "",
-			daily: false
+			daily: false,
+			initialName: ""
 		});
+
 
 		setMode(mode === "creating" ? null : "creating");
 	};
@@ -292,7 +312,6 @@ const Tasks: NextPage<Props> = ({ }) => {
 			...state,
 			name: newValue
 		}));
-
 	};
 
 	const handleChangeDailySchedulation = (checked: boolean) => {
@@ -326,19 +345,12 @@ const Tasks: NextPage<Props> = ({ }) => {
 		if (!mode)
 			return;
 
-		const token = cookies.load("token");
-
 
 		if (!actualTask.start || !actualTask.done)
 			return;
 
 		if (mode === "creating")
 			createTask({
-				context: {
-					headers: {
-						authorization: token
-					}
-				},
 				variables: {
 					name: actualTask.name,
 					start: actualTask.start,
@@ -358,7 +370,7 @@ const Tasks: NextPage<Props> = ({ }) => {
 					<Grid>
 						<TaskList>
 							<Text center fontSize="1em" ><P all="0.5em">Task List</P></Text>
-							<Picker values={tasks ? tasks.map(task => task.name) : []} handleClick={handleSelectTask} />
+							<Picker values={tasks ? tasks.map(task => task.name) : []} handleClick={handleSelectTask} initialValue={actualTask.initialName} />
 						</TaskList>
 						<TaskInfo>
 							<SectionTitle css={`
@@ -375,34 +387,25 @@ const Tasks: NextPage<Props> = ({ }) => {
 
 							<Info css={`grid-area: info;`}>
 								{
-									mode === "creating"
+									mode === "creating" || mode === "editing"
 										? <Form>
 
 											<InputSpan>Name</InputSpan>
-											<Input onChange={handleChangeNameOfTheTask} placeholder="Name of the task" />
+											<Input onChange={handleChangeNameOfTheTask} value={actualTask.name} placeholder="Name of the task" />
 											<br />
 											<CheckBox onChange={handleChangeDailySchedulation} value={actualTask.daily} >daily</CheckBox>
 
 										</Form>
-										: mode === "editing"
-											? <Form>
-
-												<InputSpan>Name</InputSpan>
-												<Input onChange={handleChangeNameOfTheTask} defaultValue={actualTask.name} placeholder="Name of the task" />
-												<br />
-												<CheckBox onChange={handleChangeDailySchedulation} value={actualTask.daily} >daily</CheckBox>
-
-											</Form>
-											: <div>Null</div>
+										: null
 								}
 							</Info>
 
-							<Picker {...mode === "editing" ? { initialValue: actualTask && actualTask.start && `${actualTask.start.hour < 10 ? `0${actualTask.start.hour}` : actualTask.start.hour}:${actualTask.start.minute < 10 ? `0${actualTask.start.minute}` : actualTask.start.minute}` || ""} : {initialValue: ""}} breakAt={900} values={hours} css={`grid-area: start;`} handleClick={handleSelectStartHour} />
-							<Picker {...mode === "editing" ? { initialValue: actualTask && actualTask.done && `${actualTask.done.hour < 10 ? `0${actualTask.done.hour}` : actualTask.done.hour}:${actualTask.done.minute < 10 ? `0${actualTask.done.minute}` : actualTask.done.minute}` || ""} : {initialValue: ""}} breakAt={900} values={hours} css={`grid-area: done;`} handleClick={handleSelectDoneHour} />
+							<Picker {...mode === "editing" ? { initialValue: actualTask && actualTask.start && `${actualTask.start.hour < 10 ? `0${actualTask.start.hour}` : actualTask.start.hour}:${actualTask.start.minute < 10 ? `0${actualTask.start.minute}` : actualTask.start.minute}` || "" } : { initialValue: "" }} breakAt={900} values={hours} css={`grid-area: start;`} handleClick={handleSelectStartHour} />
+							<Picker {...mode === "editing" ? { initialValue: actualTask && actualTask.done && `${actualTask.done.hour < 10 ? `0${actualTask.done.hour}` : actualTask.done.hour}:${actualTask.done.minute < 10 ? `0${actualTask.done.minute}` : actualTask.done.minute}` || "" } : { initialValue: "" }} breakAt={900} values={hours} css={`grid-area: done;`} handleClick={handleSelectDoneHour} />
 						</TaskInfo>
 						<BottomBar>
 							<Button css={`float: left;`} activated={mode === "creating"} deactivated={mode === "editing"} onClick={setCreateMode}>Create</Button>
-							<Button css={`float: right;`} onClick={handleSave} >Save</Button>
+							<Button css={`float: right;`} onClick={handleSave} >{createTaskData.loading ? <div><i className="fas fa-spin fa-circle-notch"></i></div> : "Save"}</Button>
 						</BottomBar>
 					</Grid>
 				</Bg>

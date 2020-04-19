@@ -21,8 +21,10 @@ import Card from "../../components/Card"
 import Hidden from "../../components/Hidden";
 import Select from "../../components/Select"
 
-import { Group, User } from "../../interfaces/api"
+import { Group } from "../../interfaces/api"
 import { OAUTH_API_URL, API_URL } from "../../config";
+
+import { User } from "../../graphql/types"
 
 type ResponsiveProps = {
 	toBreak: number,
@@ -186,7 +188,7 @@ const Settings: NextPage<Props> = () => {
 
 									<Text>
 										<Flex align="center" justify="space-between" direction="row" rowToCol={400}>
-											<span>token: </span>{user ? <Hidden hidden >{user.access_token}</Hidden> : "loading..."}
+											<span>token: </span>{user ? <Hidden hidden >{user && user.access_token || "loading"}</Hidden> : "loading..."}
 										</Flex>
 									</Text>
 								</Flex>
