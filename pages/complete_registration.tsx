@@ -19,11 +19,12 @@ import Text from "../components/Text"
 import Link from "../components/Link"
 import ConnectButton from "../components/ConnectButton"
 
+import useUser from "../hooks/useUser"
 
 import { hexToRgb } from "../utils/styles"
 import { objectToURI, redirect, validateToken, isValidUser, getUserFromToken } from "../utils"
 
-import { User } from "../interfaces/api"
+import { User } from "../graphql/types"
 
 import { OAUTH_API_URL, API_URL, CLIENT_ID } from "../config"
 
@@ -33,40 +34,15 @@ type Props = {
 
 const CompleteRegistration: NextPage<Props> = ({ user:  _ }) => {
         const [isLoading, setIsLoading] = useState<boolean>(true);
-        const [user, setUser] = useState<User | null>(null);
+        const [user, reFetch] = useUser();
         const router = useRouter();
 
 
+       
         useEffect(() => {
-                if (user === null) {
-                        fetchUser();
-                }
+                setIsLoading(!!user);
         }, [user]);
-
-        const fetchUser = async () => {
-
-                const token = cookies.load("token");
-
-                if (!isLoading) setIsLoading(true);
-
-                try {
-
-                        const { data } = await axios.get<{ user: User }>(`${API_URL}/auth/user`, {
-                                headers: { Authorization: token }
-                        })
-                
-                        console.log(data.user)
-                
-                        if (data.user.refresh_token && data.user.access_token)
-                                router.push("/");
-                
-                        setUser(data.user);
-                } catch (e) {
-                        console.log(e.response.data);
-                } finally {
-                        setIsLoading(false);
-                }
-        }
+        
 
         const redirectHandler = async () => {
                 const token = cookies.load("token");
